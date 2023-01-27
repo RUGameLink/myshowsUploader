@@ -1,23 +1,29 @@
 import json
+import time
+
 from selenium import webdriver
 from time import sleep
 from selenium.webdriver.common.by import By
+import re
 
-def parse_page(url):
+
+def parse_page(url, second):
     # create a new chrome browser instance
-    driver = webdriver.Chrome(executable_path="C:\\Users\\worker\\PycharmProjects\\myshowsUploader\\chrome_driver\\chromedriver.exe")
+    driver = webdriver.Chrome(executable_path="chrome_driver/chromedriver.exe")
 
     # navigate to youtube
     driver.get(url)
+    end_time = time.time() + second
     j = 0
-    while j < 1000:
+    while time.time() < end_time:
         driver.execute_script(f"window.scrollTo(0, {j});")
         print(j)
         j += 1
 
     # wait for the page to load
+    print("перекур")
     sleep(10)
-
+    print("парсинг данных...")
 
     try:
         # find all the video elements on the page
@@ -32,9 +38,10 @@ def parse_page(url):
             print(line)
             split_text = videos[i].text.splitlines()
             #print(split_text)
-            text_line = f"title: {split_text[1]} time: {split_text[0]}\n"
-        #    print(text_line)
-            video_data.append(text_line)
+            pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
+            if(pattern.match(split_text[0])):
+                text_line = f"title: {split_text[1]} time: {split_text[0]}\n"
+                video_data.append(text_line)
             split_text.clear()
             i += 1
         return video_data
@@ -44,17 +51,21 @@ def parse_page(url):
         driver.close()
         driver.quit()
 
+
 def write_to_json(data):
     MyFile = open('output.txt', 'w')
     MyFile.writelines(data)
     MyFile.close()
 
 
-
 def main():
     url = "https://www.youtube.com/GohaMedia/videos"
-    data = parse_page(url)
+    text = input("Введите время (секунды): ")
+    second = int(text)
+    data = parse_page(url, second=second)
+    print("\n\nзапись данных в файл\n\n")
     write_to_json(data)
+    print(f"\n\nЗаписано {len(data)} видео\n\n")
 
 if __name__ == '__main__':
     main()
