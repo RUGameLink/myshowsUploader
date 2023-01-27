@@ -40,7 +40,7 @@ def parse_page(url, second):
             #print(split_text)
             pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
             if(pattern.match(split_text[0])):
-                text_line = f"title: {split_text[1]} time: {split_text[0]}\n"
+                text_line = f"{split_text[1]}%%{split_text[0]}\n"
                 video_data.append(text_line)
             split_text.clear()
             i += 1
