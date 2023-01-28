@@ -3,10 +3,10 @@ import time
 import pickle
 from selenium.webdriver.common.by import By
 
-def main():
+def upload_episodes(tag):
     driver = webdriver.Chrome(executable_path="chrome_driver/chromedriver.exe")
     url = "https://old.myshows.me/mt/"
-#try:
+    # try:
     # driver.get(url=url)
     #
     # time.sleep(40)
@@ -25,11 +25,14 @@ def main():
         data = video.split('%%')
         video_info.append(data)
     video_info.reverse()
-    video_info.pop(0)
+    # video_info.pop(0)
     table_episode = driver.find_element(By.XPATH, '/html/body/div/main/div[4]/table/tbody/tr[2]/td[7]/a[1]').click()
     time.sleep(5)
 
     for info in video_info:
+        episode_number = driver.find_element(By.XPATH, '/html/body/div/main/div[4]/table/tbody/tr[1]/td[2]').text
+        new_neumber = int(episode_number) + 1
+        time.sleep(2)
 
         button_add = driver.find_element(By.XPATH, '/html/body/div/main/div[2]/a').click()
         time.sleep(2)
@@ -41,7 +44,7 @@ def main():
 
         episode_input = driver.find_element(By.ID, 'episodeNumber')
         episode_input.clear()
-        episode_input.send_keys("0")
+        episode_input.send_keys(f"{new_neumber}")
         time.sleep(2)
 
         season_input = driver.find_element(By.ID, 'seasonNumber')
@@ -49,26 +52,31 @@ def main():
         season_input.send_keys("2023")
         time.sleep(2)
 
+        try:
+            if(tag == 2):
+                is_spesial = driver.find_element(By.XPATH, '//*[@id="data-form"]/div[1]/div[2]/div[5]/div/label').click()
+                time.sleep(10)
+        except Exception as exept:
+            print(exept)
+
         runtime_input = driver.find_element(By.ID, 'runtime')
         runtime_input.clear()
         runtime_input.send_keys(info[1])
         time.sleep(2)
 
-        try:
-            button_save = driver.find_element(By.XPATH, '//*[@id="data-form"]/div[2]/div[1]/div[2]/button').click()
-        except Exception as exept:
-            print(exept)
 
+        print()
+        # try:
+        #     button_save = driver.find_element(By.XPATH, '//*[@id="data-form"]/div[2]/div[1]/div[2]/button').click()
+        # except Exception as exept:
+        #     print(exept)
+        driver.close()
+        driver.quit()
 
-
-
-
-
-# except Exception as exept:
-#     print(exept)
-# finally:
-    driver.close()
-    driver.quit()
+def main():
+    text = input("1 - Видео; 2 - Стримы: ")
+    tag = int(text)
+    upload_episodes(tag)
 
 if __name__ == '__main__':
     main()

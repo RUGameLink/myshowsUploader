@@ -7,6 +7,12 @@ from selenium.webdriver.common.by import By
 import re
 
 
+def get_minute(param):
+    date = param.split(':')
+    result = int(date[0]) * 60 + int(date[1])
+    return result
+
+
 def parse_page(url, second):
     # create a new chrome browser instance
     driver = webdriver.Chrome(executable_path="chrome_driver/chromedriver.exe")
@@ -38,9 +44,14 @@ def parse_page(url, second):
             print(line)
             split_text = videos[i].text.splitlines()
             #print(split_text)
-            pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
-            if(pattern.match(split_text[0])):
+            pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
+            pattern_two = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
+            if((pattern_two.match(split_text[0]))):
                 text_line = f"{split_text[1]}%%{split_text[0]}\n"
+                video_data.append(text_line)
+            if(pattern.match(split_text[0])):
+                minute = get_minute(split_text[0])
+                text_line = f"{split_text[1]}%%{minute}\n"
                 video_data.append(text_line)
             split_text.clear()
             i += 1
@@ -59,7 +70,7 @@ def write_to_json(data):
 
 
 def main():
-    url = "https://www.youtube.com/GohaMedia/videos"
+    url = "https://www.youtube.com/@GohaMedia/videos"
     text = input("Введите время (секунды): ")
     second = int(text)
     data = parse_page(url, second=second)
