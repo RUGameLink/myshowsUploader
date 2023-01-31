@@ -24,7 +24,7 @@ def parse_page(url, second):
     while time.time() < end_time:
         driver.execute_script(f"window.scrollTo(0, {j});")
         print(j)
-        j += 1
+        j += 100
 
     # wait for the page to load
     print("перекур")
@@ -47,11 +47,13 @@ def parse_page(url, second):
             pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
             pattern_two = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
             if((pattern_two.match(split_text[0]))):
-                text_line = f"{split_text[1]}%%{split_text[0]}\n"
+                text_line = f"[ВИДЕО] {split_text[1]}\n"
                 video_data.append(text_line)
-            if(pattern.match(split_text[0])):
-                minute = get_minute(split_text[0])
-                text_line = f"{split_text[1]}%%{minute}\n"
+            elif(pattern.match(split_text[0])):
+                text_line = f"[ВИДЕО] {split_text[1]}\n"
+                video_data.append(text_line)
+            else:
+                text_line = f"[ВИДЕО] {split_text[1]}\n"
                 video_data.append(text_line)
             split_text.clear()
             i += 1
@@ -64,13 +66,13 @@ def parse_page(url, second):
 
 
 def write_to_json(data):
-    MyFile = open('output.txt', 'w')
+    MyFile = open('output.txt', 'w', encoding="utf-8")
     MyFile.writelines(data)
     MyFile.close()
 
 
 def main():
-    url = "https://www.youtube.com/@GohaMedia/videos"
+    url = "https://www.youtube.com/@TheGideonGames/videos"
     text = input("Введите время (секунды): ")
     second = int(text)
     data = parse_page(url, second=second)
