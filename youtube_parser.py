@@ -9,15 +9,16 @@ import re
 
 def get_minute(param):
     date = param.split(':')
-    result = int(date[0]) * 60 + int(date[1])
+    if(len(date) == 3):
+        result = int(date[0]) * 60 + int(date[1])
+    else:
+        result = int(date[0])
     return result
 
 
 def parse_page(url, second):
-    # create a new chrome browser instance
     driver = webdriver.Chrome(executable_path="chrome_driver/chromedriver.exe")
 
-    # navigate to youtube
     driver.get(url)
     end_time = time.time() + second
     j = 0
@@ -45,15 +46,22 @@ def parse_page(url, second):
             split_text = videos[i].text.splitlines()
             #print(split_text)
             pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
-            pattern_two = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
+            pattern_two = re.compile(r'^([0-5][0-9]):[0-5][0-9]$')
+            pattern_three = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
             if((pattern_two.match(split_text[0]))):
-                text_line = f"[ВИДЕО] {split_text[1]}\n"
+                minute = get_minute(split_text[0])
+                text_line = f"[СТРИМ] {split_text[1]}%%{minute}\n"
                 video_data.append(text_line)
             elif(pattern.match(split_text[0])):
-                text_line = f"[ВИДЕО] {split_text[1]}\n"
+                minute = get_minute(split_text[0])
+                text_line = f"[СТРИМ] {split_text[1]}%%{minute}\n"
+                video_data.append(text_line)
+            elif (pattern_three.match(split_text[0])):
+                minute = get_minute(split_text[0])
+                text_line = f"[СТРИМ] {split_text[1]}%%{minute}\n"
                 video_data.append(text_line)
             else:
-                text_line = f"[ВИДЕО] {split_text[1]}\n"
+                text_line = f"[СТРИМ] {split_text[0]}\n"
                 video_data.append(text_line)
             split_text.clear()
             i += 1
@@ -72,7 +80,7 @@ def write_to_json(data):
 
 
 def main():
-    url = "https://www.youtube.com/@TheGideonGames/videos"
+    url = "https://www.youtube.com/@TheGideonGames/streams"
     text = input("Введите время (секунды): ")
     second = int(text)
     data = parse_page(url, second=second)
