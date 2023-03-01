@@ -9,14 +9,20 @@ import re
 
 def get_minute(param):
     date = param.split(':')
-    if(len(date) == 3):
+    if (len(date) == 3):
         result = int(date[0]) * 60 + int(date[1])
     else:
         result = int(date[0])
     return result
 
 
-def parse_page(url, second):
+def write_to_json(data, channel_name):
+    my_file = open(f'{channel_name}.txt', 'w', encoding="utf-8")
+    my_file.writelines(data)
+    my_file.close()
+
+
+def parse_page(url, second, tag):
     driver = webdriver.Chrome(executable_path="chrome_driver/chromedriver.exe")
 
     driver.get(url)
@@ -44,24 +50,24 @@ def parse_page(url, second):
             line = str(videos[i].text)
             print(line)
             split_text = videos[i].text.splitlines()
-            #print(split_text)
+            # print(split_text)
             pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
             pattern_two = re.compile(r'^([0-5][0-9]):[0-5][0-9]$')
             pattern_three = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
-            if((pattern_two.match(split_text[0]))):
+            if ((pattern_two.match(split_text[0]))):
                 minute = get_minute(split_text[0])
-                text_line = f"[СТРИМ] {split_text[1]}%%{minute}\n"
+                text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
                 video_data.append(text_line)
-            elif(pattern.match(split_text[0])):
+            elif (pattern.match(split_text[0])):
                 minute = get_minute(split_text[0])
-                text_line = f"[СТРИМ] {split_text[1]}%%{minute}\n"
+                text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
                 video_data.append(text_line)
             elif (pattern_three.match(split_text[0])):
                 minute = get_minute(split_text[0])
-                text_line = f"[СТРИМ] {split_text[1]}%%{minute}\n"
+                text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
                 video_data.append(text_line)
             else:
-                text_line = f"[СТРИМ] {split_text[0]}\n"
+                text_line = f"[{tag}] {split_text[0]}\n"
                 video_data.append(text_line)
             split_text.clear()
             i += 1
@@ -73,20 +79,21 @@ def parse_page(url, second):
         driver.quit()
 
 
-def write_to_json(data):
-    MyFile = open('output.txt', 'w', encoding="utf-8")
-    MyFile.writelines(data)
-    MyFile.close()
+class YouTube_Parser:
 
-
-def main():
-    url = "https://www.youtube.com/@TheGideonGames/streams"
-    text = input("Введите время (секунды): ")
-    second = int(text)
-    data = parse_page(url, second=second)
-    print("\n\nзапись данных в файл\n\n")
-    write_to_json(data)
-    print(f"\n\nЗаписано {len(data)} видео\n\n")
-
-if __name__ == '__main__':
-    main()
+    def start_parsing(self, channel_name, channel_url):
+        tag = 'ВИДЕО'
+        option = int(input('1 -- Видео\n2 -- Стримы '))
+        if option == 1:
+            url = channel_url + '/videos'
+            tag = 'ВИДЕО'
+        else:
+            url = channel_url + '/streams'
+            tag = 'СТРИМ'
+        text = input("Введите время (секунды): \n")
+        second = int(text)
+        print('Парсинг...')
+        data = parse_page(url, second=second, tag=tag)
+        print("\n\nзапись данных в файл\n\n")
+        write_to_json(data, channel_name)
+        print(f"\n\nЗаписано {len(data)} видео\n\n")
