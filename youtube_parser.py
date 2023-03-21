@@ -54,21 +54,25 @@ def parse_page(url, second, tag):
             pattern = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
             pattern_two = re.compile(r'^([0-5][0-9]):[0-5][0-9]$')
             pattern_three = re.compile(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
-            if ((pattern_two.match(split_text[0]))):
-                minute = get_minute(split_text[0])
-                text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
-                video_data.append(text_line)
-            elif (pattern.match(split_text[0])):
-                minute = get_minute(split_text[0])
-                text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
-                video_data.append(text_line)
-            elif (pattern_three.match(split_text[0])):
-                minute = get_minute(split_text[0])
-                text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
+            if tag == 'ШОРТ':
+                text_line = f"[{tag}] {split_text[0]}%%2\n"
                 video_data.append(text_line)
             else:
-                text_line = f"[{tag}] {split_text[0]}\n"
-                video_data.append(text_line)
+                if ((pattern_two.match(split_text[0]))):
+                    minute = get_minute(split_text[0])
+                    text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
+                    video_data.append(text_line)
+                elif (pattern.match(split_text[0])):
+                    minute = get_minute(split_text[0])
+                    text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
+                    video_data.append(text_line)
+                elif (pattern_three.match(split_text[0])):
+                    minute = get_minute(split_text[0])
+                    text_line = f"[{tag}] {split_text[1]}%%{minute}\n"
+                    video_data.append(text_line)
+                else:
+                    text_line = f"[{tag}] {split_text[0]}\n"
+                    video_data.append(text_line)
             split_text.clear()
             i += 1
         return video_data
@@ -83,13 +87,16 @@ class YouTube_Parser:
 
     def start_parsing(self, channel_name, channel_url):
         tag = 'ВИДЕО'
-        option = int(input('1 -- Видео\n2 -- Стримы '))
+        option = int(input('1 -- Видео\n2 -- Стримы\n3 -- Шорты '))
         if option == 1:
             url = channel_url + '/videos'
             tag = 'ВИДЕО'
-        else:
+        elif option == 2:
             url = channel_url + '/streams'
             tag = 'СТРИМ'
+        else:
+            url = channel_url + '/shorts'
+            tag = 'ШОРТ'
         text = input("Введите время (секунды): \n")
         second = int(text)
         print('Парсинг...')

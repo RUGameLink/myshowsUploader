@@ -49,7 +49,8 @@ def upload_menu(list_channel):
     elif option <= len(list_channel):
         loader = Data_Loader()
         channel = list_channel[option]
-        loader.upload_to_myshows(channel[0], channel[2])
+        max_ep = int(input('Введите максимальное количество эпизодов в сезоне: '))
+        loader.upload_to_myshows(channel[0], channel[2], max_ep)
 
 
 def print_menu():
@@ -74,13 +75,16 @@ def main():
                 print('Загружаю список каналов...')
                 list = read_channel()
                 parsing_menu(list)
+                print_menu()
             elif option == 2:
                 print('загружаю список каналов для загрузки в myshows')
                 list = read_channel()
                 upload_menu(list)
+                print_menu()
             elif option == 3:
                 print('Подготовка к записи...')
                 write_channel()
+                print_menu()
             elif option == 4:
                 print('До скорой встречи!')
                 exit()

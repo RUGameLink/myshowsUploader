@@ -3,7 +3,7 @@ import time
 import pickle
 from selenium.webdriver.common.by import By
 
-def upload_episodes(season_n, episode_n, path, channel_name):
+def upload_episodes(season_n, episode_n, path, channel_name, max_ep):
     driver = webdriver.Chrome(executable_path="chrome_driver/chromedriver.exe")
     url = "https://old.myshows.me/mt/"
 
@@ -56,7 +56,7 @@ def upload_episodes(season_n, episode_n, path, channel_name):
         season_input.clear()
         season_input.send_keys(F"{season_num}")
         time.sleep(1)
-        if(episode_num == 200):
+        if(episode_num == max_ep):
             episode_num = 0
             season_num += 1
         episode_num += 1
@@ -75,9 +75,9 @@ def upload_episodes(season_n, episode_n, path, channel_name):
     driver.quit()
 
 class Data_Loader:
-    def upload_to_myshows(self, channel_name, path):
+    def upload_to_myshows(self, channel_name, path, max_ep):
         season = input("Введите номер сезона:")
         season_n = int(season)
         episode = input("Введите номер последнего загруженного эпизода (если эпизодов нет -> 0):")
         episode_n = int(episode)
-        upload_episodes(season_n, episode_n, path, channel_name)
+        upload_episodes(season_n, episode_n, path, channel_name, max_ep)
