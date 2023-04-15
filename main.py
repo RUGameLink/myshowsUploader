@@ -50,11 +50,13 @@ def upload_menu(list_channel):
         loader = Data_Loader()
         channel = list_channel[option]
         max_ep = int(input('Введите максимальное количество эпизодов в сезоне: '))
+
         loader.upload_to_myshows(channel[0], channel[2], max_ep)
 
 
 def print_menu():
     menu_options = {
+        0: 'Обновление печенек',
         1: 'Парсинг данных',
         2: 'Загрузка в myshows',
         3: 'Добавление канала',
@@ -71,7 +73,12 @@ def main():
     while True:
         try:
             option = int(input('Введите число для работы: '))
-            if option == 1:
+            if option == 0:
+                print('У вас 40 секунд:)')
+                loader = Data_Loader()
+                loader.save_cookies()
+                print_menu()
+            elif option == 1:
                 print('Загружаю список каналов...')
                 list = read_channel()
                 parsing_menu(list)
@@ -94,9 +101,17 @@ def main():
         except Exception as e:
             print(e)
             print('Команда не распознана!')
-            print_menu()
 
 
+
+def print_menu_cookies():
+    menu_options = {
+        1: 'Да',
+        2: 'Нет'
+    }
+
+    for key in menu_options.keys():
+        print(key, '--', menu_options[key])
 
 if __name__ == '__main__':
     main()
