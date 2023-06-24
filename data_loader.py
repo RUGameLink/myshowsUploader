@@ -35,9 +35,9 @@ def upload_episodes(season_n, episode_n, path, channel_name, max_ep):
         episode_num = episode_n + 1
         for info in video_info:
 
-            episode_number = driver.find_element(By.XPATH, '/html/body/div/main/div[4]/table/tbody/tr[1]/td[2]').text
-            new_neumber = int(episode_number) + 1
-            time.sleep(1)
+        #    episode_number = driver.find_element(By.XPATH, '/html/body/div/main/div[4]/table/tbody/tr[1]/td[2]').text
+        #    new_neumber = int(episode_number) + 1
+        #    time.sleep(1)
 
             driver.find_element(By.XPATH, '/html/body/div/main/div[2]/a').click()
             time.sleep(1)

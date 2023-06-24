@@ -147,7 +147,7 @@ def start_parsing_page(url, tag, channel_name):
     write_to_json(data, channel_name)
     print(f"\n\nЗаписано {len(data)} видео\n\n")
 
-def start_parsing_page(url, channel_name):
+def start_parsing_playlist(url, channel_name):
     text = input("Введите время (секунды): \n")
     second = int(text)
     print('Парсинг...')
@@ -175,4 +175,4 @@ class YouTube_Parser:
             tag = 'ШОРТ'
             start_parsing_page(url, tag, channel_name)
         else:
-            start_parsing_page(channel_url, channel_name)
+            start_parsing_playlist(channel_url, channel_name)
